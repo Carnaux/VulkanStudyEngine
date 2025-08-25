@@ -30,11 +30,14 @@ class VseApp {
   void createPipelineLayout();
   void createPipeline();
   void createCommandBuffers();
+  void freeCommandBuffers();
   void drawFrame();
+  void recreateSwapChain();
+  void recordCommandBuffer(int imageIndex);
 
   VseWindow vseWindow{WIDTH, HEIGHT, "VSE Application"};
   VseDevice vseDevice{vseWindow};
-  VseSwapChain vseSwapChain{vseDevice, vseWindow.getExtent()};
+  std::unique_ptr<VseSwapChain> vseSwapChain;
   std::unique_ptr<VsePipeline> vsePipeline;
   VkPipelineLayout pipelineLayout;
   std::vector<VkCommandBuffer> commandBuffers;

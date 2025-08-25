@@ -18,9 +18,11 @@ VseWindow::~VseWindow() {
 void VseWindow::initWindow() {
   glfwInit();
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+  glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
   window =
       glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
+  glfwSetWindowUserPointer(window, this);
+  glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
   if (!window) {
     throw std::runtime_error("Failed to create GLFW window");
   }
@@ -32,6 +34,15 @@ void VseWindow::createWindowSurface(VkInstance instance,
       VK_SUCCESS) {
     throw std::runtime_error("filed to create window surface");
   }
+}
+
+void VseWindow::frameBufferResizeCallback(GLFWwindow *window, int width,
+                                          int height) {
+  auto vseWindow =
+      reinterpret_cast<VseWindow *>(glfwGetWindowUserPointer(window));
+  vseWindow->frameBufferResized = true;
+  vseWindow->width = width;
+  vseWindow->height = height;
 }
 
 }  // namespace vse
