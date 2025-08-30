@@ -1,9 +1,8 @@
 #pragma once
 
 #include "vse_device.hpp"
-#include "vse_model.hpp"
-#include "vse_pipeline.hpp"
-#include "vse_swap_chain.hpp"
+#include "vse_game_object.hpp"
+#include "vse_renderer.hpp"
 #include "vse_window.hpp"
 
 // std
@@ -26,22 +25,13 @@ class VseApp {
   void run();
 
  private:
-  void loadModels();
-  void createPipelineLayout();
-  void createPipeline();
-  void createCommandBuffers();
-  void freeCommandBuffers();
-  void drawFrame();
-  void recreateSwapChain();
-  void recordCommandBuffer(int imageIndex);
+  void loadGameObjects();
 
   VseWindow vseWindow{WIDTH, HEIGHT, "VSE Application"};
   VseDevice vseDevice{vseWindow};
-  std::unique_ptr<VseSwapChain> vseSwapChain;
-  std::unique_ptr<VsePipeline> vsePipeline;
-  VkPipelineLayout pipelineLayout;
-  std::vector<VkCommandBuffer> commandBuffers;
-  std::unique_ptr<VseModel> vseModel;
+  VseRenderer vseRenderer{vseWindow, vseDevice};
+
+  std::vector<VseGameObject> gameObjects;
 };
 
 }  // namespace vse
