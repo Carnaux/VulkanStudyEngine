@@ -34,21 +34,73 @@ void VseApp::run() {
   vkDeviceWaitIdle(vseDevice.device());
 }
 
+std::unique_ptr<VseModel> createCubeModel(VseDevice& device, glm::vec3 offset) {
+  std::vector<VseModel::Vertex> vertices{
+      // left face (white, x = -0.5)
+      {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+      {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+      {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
+      {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+      {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
+      {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+
+      // right face (yellow, x = +0.5)
+      {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+      {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
+      {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+      {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+      {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+      {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
+
+      // top face (red, y = +0.5)
+      {{-.5f, .5f, -.5f}, {.9f, .6f, .1f}},
+      {{.5f, .5f, .5f}, {.9f, .6f, .1f}},
+      {{.5f, .5f, -.5f}, {.9f, .6f, .1f}},
+      {{-.5f, .5f, -.5f}, {.9f, .6f, .1f}},
+      {{-.5f, .5f, .5f}, {.9f, .6f, .1f}},
+      {{.5f, .5f, .5f}, {.9f, .6f, .1f}},
+
+      // bottom face (orange, y = -0.5)
+      {{-.5f, -.5f, -.5f}, {.8f, .1f, .1f}},
+      {{.5f, -.5f, -.5f}, {.8f, .1f, .1f}},
+      {{.5f, -.5f, .5f}, {.8f, .1f, .1f}},
+      {{-.5f, -.5f, -.5f}, {.8f, .1f, .1f}},
+      {{.5f, -.5f, .5f}, {.8f, .1f, .1f}},
+      {{-.5f, -.5f, .5f}, {.8f, .1f, .1f}},
+
+      // nose face (blue, z = +0.5)
+      {{-.5f, -.5f, .5f}, {.1f, .1f, .8f}},
+      {{.5f, .5f, .5f}, {.1f, .1f, .8f}},
+      {{.5f, -.5f, .5f}, {.1f, .1f, .8f}},
+      {{-.5f, -.5f, .5f}, {.1f, .1f, .8f}},
+      {{-.5f, .5f, .5f}, {.1f, .1f, .8f}},
+      {{.5f, .5f, .5f}, {.1f, .1f, .8f}},
+
+      // tail face (green, z = -0.5)
+      {{-.5f, -.5f, -.5f}, {.1f, .8f, .1f}},
+      {{.5f, -.5f, -.5f}, {.1f, .8f, .1f}},
+      {{.5f, .5f, -.5f}, {.1f, .8f, .1f}},
+      {{-.5f, -.5f, -.5f}, {.1f, .8f, .1f}},
+      {{.5f, .5f, -.5f}, {.1f, .8f, .1f}},
+      {{-.5f, .5f, -.5f}, {.1f, .8f, .1f}},
+
+  };
+  for (auto& v : vertices) {
+    v.position += offset;
+  }
+  return std::make_unique<VseModel>(device, vertices);
+}
+
 void VseApp::loadGameObjects() {
-  std::vector<VseModel::Vertex> vertices{{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-                                         {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-                                         {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
+  std::shared_ptr<VseModel> vseModel =
+      createCubeModel(vseDevice, {.0f, .0f, .0f});
 
-  auto vseModel = std::make_shared<VseModel>(vseDevice, vertices);
+  auto cube = VseGameObject::createGameObject();
+  cube.model = vseModel;
+  cube.transform.translation = {.0f, .0f, .5f};
+  cube.transform.scale = {.5f, .5f, .5f};
 
-  auto triangle = VseGameObject::createGameObject();
-  triangle.model = vseModel;
-  triangle.color = {.1f, .8f, .1f};
-  triangle.transform2d.translation.x = .2f;
-  triangle.transform2d.scale = {2.f, .5f};
-  triangle.transform2d.rotation = .25f * glm::two_pi<float>();
-
-  gameObjects.push_back(std::move(triangle));
+  gameObjects.push_back(std::move(cube));
 }
 
 }  // namespace vse
